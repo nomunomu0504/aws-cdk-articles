@@ -1,0 +1,150 @@
+openapi: 3.0.0
+servers:
+  - url: "https://dev.example.com/"
+    description: Development
+  - url: "https://stg.example.com/"
+    description: Staging
+  - url: "https://example.com/"
+    description: Production
+info:
+  description: |
+    AWS API GatewayのAPI定義
+  version: 0.0.1
+  title: AWS API Gateway API
+tags:
+  - name: User
+    description: User API
+paths:
+  /users:
+    get:
+      tags:
+        - User
+      operationId: "get-users"
+      summary: "ユーザ一覧取得"
+      description: |
+        ユーザ一覧を取得します。
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserListResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /users/{id}:
+    get:
+      tags:
+        - User
+      operationId: "get-user-detail"
+      summary: "ユーザ詳細取得"
+      description: |
+        指定されたユーザの詳細を取得します。
+      parameters:
+        - name: id
+          in: path
+          description: ユーザID
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDetailResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    UserListResponse:
+      title: UserListResponse
+      type: object
+      properties:
+        ok:
+          type: boolean
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+    UserDetailResponse:
+      title: UserDetailResponse
+      type: object
+      properties:
+        ok:
+          type: boolean
+        user:
+          $ref: "#/components/schemas/User"
+    User:
+      title: User
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID
+        name:
+          type: string
+          description: Name
+        age:
+          type: integer
+          description: Age
+        created_at:
+          type: string
+          description: Created At
+        updated_at:
+          type: string
+          description: Updated At
+    ErrorResponse:
+      title: ErrorResponse
+      type: object
+      properties:
+        ok:
+          type: boolean
+        error:
+          type: object
+          properties:
+            code:
+              type: number
+            message:
+              type: string
+          required:
+            - code
+            - message
+      required:
+        - ok
+        - error
